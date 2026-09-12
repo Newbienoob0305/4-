@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import confetti from 'canvas-confetti';
 import html2canvas from 'html2canvas';
 import {
@@ -21,6 +21,7 @@ import {
   CheckCircle,
   Brain,
   Info,
+  Loader2,
 } from 'lucide-react';
 import { PersonalityType, AXIS_DETAILS, AxisType } from '../data/testData';
 import { AdBanner } from './AdBanner';
@@ -50,6 +51,7 @@ export const ResultReport: React.FC<ResultReportProps> = ({
   onReset,
 }) => {
   const reportRef = useRef<HTMLDivElement>(null);
+  const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
   // Trigger celebration confetti on mount
   useEffect(() => {
@@ -132,21 +134,64 @@ export const ResultReport: React.FC<ResultReportProps> = ({
     maintainAspectRatio: false,
   };
 
-  // Image Download Function
+  // Robust Image Download Function for Mobile & Desktop
   const handleDownloadImage = async () => {
-    if (!reportRef.current) return;
+    if (!reportRef.current || isDownloading) return;
+    setIsDownloading(true);
+
     try {
+      // Allow chart and animations to stabilize
+      await new Promise((resolve) => setTimeout(resolve, 150));
+
       const canvas = await html2canvas(reportRef.current, {
         backgroundColor: '#020617',
         scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
       });
-      const link = document.createElement('a');
-      link.download = `4Self-Test-Result-${typeCode}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+
+      const imageUrl = canvas.toDataURL('image/png');
+      const filename = `4Self-Test-Result-${typeCode}.png`;
+
+      // Check if inside Kakao/Instagram in-app browser or mobile
+      const isMobileOrInApp = /KAKAOTALK|Instagram|FB_IAB|iPhone|iPad|iPod|Android/i.test(
+        navigator.userAgent
+      );
+
+      if (isMobileOrInApp) {
+        // In-app browsers often block direct file download link; open in new window for easy save
+        const newTab = window.open();
+        if (newTab) {
+          newTab.document.write(
+            `<html><head><title>${filename}</title></head><body style="margin:0;background:#020617;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;color:#fff;font-family:sans-serif;">
+              <p style="padding:10px;font-size:14px;color:#818cf8;">이미지를 길게 누르면 저장하실 수 있습니다.</p>
+              <img src="${imageUrl}" style="max-width:95%;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.5);" />
+            </body></html>`
+          );
+        } else {
+          // Fallback direct download link
+          const link = document.createElement('a');
+          link.href = imageUrl;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      } else {
+        // Desktop Browser Download
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
     } catch (err) {
       console.error('이미지 저장 중 오류 발생:', err);
-      alert('이미지 저장 중 오류가 발생했습니다.');
+      alert('이미지 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -170,10 +215,20 @@ export const ResultReport: React.FC<ResultReportProps> = ({
         <div className="flex items-center gap-2">
           <button
             onClick={handleDownloadImage}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition-colors cursor-pointer"
+            disabled={isDownloading}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition-all cursor-pointer disabled:opacity-50"
           >
-            <Download className="w-4 h-4 text-indigo-400" />
-            <span>이미지 저장</span>
+            {isDownloading ? (
+              <>
+                <Loader2 className="w-4 h-4 text-indigo-400 animate-spin" />
+                <span>이미지 생성 중...</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4 text-indigo-400" />
+                <span>이미지 저장</span>
+              </>
+            )}
           </button>
 
           <button
