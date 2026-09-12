@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { QUESTIONS, calculateResult, Question } from './data/testData';
 import { Header, TabType } from './components/Header';
 import { IntroSection } from './components/IntroSection';
@@ -14,6 +14,24 @@ export function App() {
   const [isFinished, setIsFinished] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [urlTypeCode, setUrlTypeCode] = useState<string | undefined>(undefined);
+
+  // Check URL query parameters on initial load (e.g. ?tab=encyclopedia&type=SDGE)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get('tab') as TabType | null;
+    const typeParam = params.get('type');
+
+    if (tabParam === 'encyclopedia' || tabParam === 'guide') {
+      setActiveTab(tabParam);
+    } else if (typeParam) {
+      setActiveTab('encyclopedia');
+    }
+
+    if (typeParam) {
+      setUrlTypeCode(typeParam.toUpperCase());
+    }
+  }, []);
 
   const currentQuestion: Question = QUESTIONS[currentIndex];
 
@@ -126,7 +144,10 @@ export function App() {
 
         {/* TAB 3: 16 PERSONALITY TYPES ENCYCLOPEDIA */}
         {activeTab === 'encyclopedia' && (
-          <TypeEncyclopedia onStartTest={handleStart} />
+          <TypeEncyclopedia
+            onStartTest={handleStart}
+            defaultTypeCode={urlTypeCode}
+          />
         )}
       </main>
 

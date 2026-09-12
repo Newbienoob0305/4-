@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
-import html2canvas from 'html2canvas';
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -12,7 +11,6 @@ import {
 } from 'chart.js';
 import { Radar } from 'react-chartjs-2';
 import {
-  Download,
   Share2,
   RotateCcw,
   Sparkles,
@@ -21,7 +19,6 @@ import {
   CheckCircle,
   Brain,
   Info,
-  Loader2,
 } from 'lucide-react';
 import { PersonalityType, AXIS_DETAILS, AxisType } from '../data/testData';
 import { AdBanner } from './AdBanner';
@@ -51,7 +48,6 @@ export const ResultReport: React.FC<ResultReportProps> = ({
   onReset,
 }) => {
   const reportRef = useRef<HTMLDivElement>(null);
-  const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
   // Trigger celebration confetti on mount
   useEffect(() => {
@@ -134,72 +130,18 @@ export const ResultReport: React.FC<ResultReportProps> = ({
     maintainAspectRatio: false,
   };
 
-  // Robust Image Download Function for Mobile & Desktop
-  const handleDownloadImage = async () => {
-    if (!reportRef.current || isDownloading) return;
-    setIsDownloading(true);
-
-    try {
-      // Allow chart and animations to stabilize
-      await new Promise((resolve) => setTimeout(resolve, 150));
-
-      const canvas = await html2canvas(reportRef.current, {
-        backgroundColor: '#020617',
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-      });
-
-      const imageUrl = canvas.toDataURL('image/png');
-      const filename = `4Self-Test-Result-${typeCode}.png`;
-
-      // Check if inside Kakao/Instagram in-app browser or mobile
-      const isMobileOrInApp = /KAKAOTALK|Instagram|FB_IAB|iPhone|iPad|iPod|Android/i.test(
-        navigator.userAgent
-      );
-
-      if (isMobileOrInApp) {
-        // In-app browsers often block direct file download link; open in new window for easy save
-        const newTab = window.open();
-        if (newTab) {
-          newTab.document.write(
-            `<html><head><title>${filename}</title></head><body style="margin:0;background:#020617;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;color:#fff;font-family:sans-serif;">
-              <p style="padding:10px;font-size:14px;color:#818cf8;">이미지를 길게 누르면 저장하실 수 있습니다.</p>
-              <img src="${imageUrl}" style="max-width:95%;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.5);" />
-            </body></html>`
-          );
-        } else {
-          // Fallback direct download link
-          const link = document.createElement('a');
-          link.href = imageUrl;
-          link.download = filename;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        }
-      } else {
-        // Desktop Browser Download
-        const link = document.createElement('a');
-        link.href = imageUrl;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-    } catch (err) {
-      console.error('이미지 저장 중 오류 발생:', err);
-      alert('이미지 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-
-  // Share link function
+  // Share link function: Share link directly pointing to 16 Personality Encyclopedia for this type
   const handleShare = () => {
+    const shareUrl = `${window.location.origin}${window.location.pathname}?tab=encyclopedia&type=${typeCode}`;
+    
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(window.location.href);
-      alert('테스트 결과 링크가 클립보드에 복사되었습니다!');
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        alert(`[${typeCode} ${personality.title}] 16가지 유형 도감 안내 링크가 복사되었습니다!\n\n${shareUrl}`);
+      }).catch(() => {
+        prompt('아래 링크를 복사하여 공유하세요:', shareUrl);
+      });
+    } else {
+      prompt('아래 링크를 복사하여 공유하세요:', shareUrl);
     }
   };
 
@@ -214,34 +156,16 @@ export const ResultReport: React.FC<ResultReportProps> = ({
 
         <div className="flex items-center gap-2">
           <button
-            onClick={handleDownloadImage}
-            disabled={isDownloading}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition-all cursor-pointer disabled:opacity-50"
-          >
-            {isDownloading ? (
-              <>
-                <Loader2 className="w-4 h-4 text-indigo-400 animate-spin" />
-                <span>이미지 생성 중...</span>
-              </>
-            ) : (
-              <>
-                <Download className="w-4 h-4 text-indigo-400" />
-                <span>이미지 저장</span>
-              </>
-            )}
-          </button>
-
-          <button
             onClick={handleShare}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-fuchsia-600 to-indigo-600 hover:from-fuchsia-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-fuchsia-500/20 transition-all cursor-pointer"
           >
-            <Share2 className="w-4 h-4 text-fuchsia-400" />
-            <span>공유하기</span>
+            <Share2 className="w-4 h-4" />
+            <span>16가지 유형 도감 링크 공유하기</span>
           </button>
 
           <button
             onClick={onReset}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg shadow-indigo-500/20 transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-all cursor-pointer"
           >
             <RotateCcw className="w-4 h-4" />
             <span>다시 테스트</span>
@@ -252,7 +176,7 @@ export const ResultReport: React.FC<ResultReportProps> = ({
       {/* Ad Banner Position (Result Top) */}
       <AdBanner label="결과 리포트 상단 광고 영역" />
 
-      {/* Main Report Container for Image Export */}
+      {/* Main Report Container */}
       <div ref={reportRef} className="space-y-8 p-4 sm:p-6 rounded-3xl bg-slate-950/60 border border-slate-800">
         {/* Result Header Hero Card */}
         <div className={`glass-panel rounded-3xl p-6 sm:p-10 relative overflow-hidden text-center space-y-6 border border-slate-700 shadow-2xl`}>

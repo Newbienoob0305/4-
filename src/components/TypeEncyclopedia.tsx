@@ -1,18 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PERSONALITY_TYPES, PersonalityType } from '../data/testData';
 import { Search, X, Award, ShieldAlert, Play, Layers } from 'lucide-react';
 import { AdBanner } from './AdBanner';
 
 interface TypeEncyclopediaProps {
   onStartTest: () => void;
+  defaultTypeCode?: string;
 }
 
-export const TypeEncyclopedia: React.FC<TypeEncyclopediaProps> = ({ onStartTest }) => {
+export const TypeEncyclopedia: React.FC<TypeEncyclopediaProps> = ({ onStartTest, defaultTypeCode }) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filterSymbol, setFilterSymbol] = useState<string>('ALL');
   const [selectedType, setSelectedType] = useState<PersonalityType | null>(null);
 
   const typeList = Object.values(PERSONALITY_TYPES);
+
+  // Check defaultTypeCode from URL or prop
+  useEffect(() => {
+    if (defaultTypeCode && PERSONALITY_TYPES[defaultTypeCode]) {
+      setSelectedType(PERSONALITY_TYPES[defaultTypeCode]);
+    } else {
+      const params = new URLSearchParams(window.location.search);
+      const typeParam = params.get('type');
+      if (typeParam && PERSONALITY_TYPES[typeParam.toUpperCase()]) {
+        setSelectedType(PERSONALITY_TYPES[typeParam.toUpperCase()]);
+      }
+    }
+  }, [defaultTypeCode]);
 
   // Filter & Search Logic
   const filteredList = typeList.filter((item) => {
