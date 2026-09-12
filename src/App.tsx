@@ -16,7 +16,7 @@ export function App() {
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [urlTypeCode, setUrlTypeCode] = useState<string | undefined>(undefined);
 
-  // Check URL query parameters on initial load (e.g. ?tab=encyclopedia&type=SDGE)
+  // Check URL query parameters on initial load
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const tabParam = params.get('tab') as TabType | null;
@@ -57,10 +57,10 @@ export function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleSelectAnswer = (val: number) => {
+  const handleSelectAnswer = (questionId: number, val: number) => {
     setAnswers((prev) => ({
       ...prev,
-      [currentQuestion.id]: val,
+      [questionId]: val,
     }));
   };
 
@@ -69,7 +69,7 @@ export function App() {
       setCurrentIndex((prev) => prev + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      // 60문항 완료
+      // 60문항 완료 -> 결과 화면 이동
       setIsFinished(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -116,7 +116,7 @@ export function App() {
                   currentIndex={currentIndex}
                   totalCount={QUESTIONS.length}
                   currentAnswer={answers[currentQuestion.id]}
-                  onSelectAnswer={handleSelectAnswer}
+                  onSelectAnswer={(val) => handleSelectAnswer(currentQuestion.id, val)}
                   onPrev={handlePrev}
                   onNext={handleNext}
                   canPrev={currentIndex > 0}

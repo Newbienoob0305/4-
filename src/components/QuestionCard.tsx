@@ -38,10 +38,10 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
   const handleSelect = (val: number) => {
     onSelectAnswer(val);
-    if (autoAdvance && canNext) {
+    if (autoAdvance) {
       setTimeout(() => {
         onNext();
-      }, 250);
+      }, 200);
     }
   };
 
@@ -152,7 +152,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
         <button
           onClick={onNext}
-          disabled={!canNext}
+          disabled={!canNext && currentAnswer === undefined}
           className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all cursor-pointer ${
             currentAnswer !== undefined
               ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20'
