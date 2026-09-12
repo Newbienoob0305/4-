@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
 
 interface AdBannerProps {
-  client?: string; // 예: 'ca-pub-1234567890123456'
-  slot?: string;   // 예: '1234567890'
+  client?: string; // 퍼블리셔 ID: ca-pub-6673384670442655
+  slot?: string;   // 승인 후 발급받는 슬롯 ID
   format?: 'auto' | 'fluid' | 'rectangle';
   className?: string;
   label?: string;
 }
 
 export const AdBanner: React.FC<AdBannerProps> = ({
-  client,
+  client = 'ca-pub-6673384670442655',
   slot,
   format = 'auto',
   className = '',
@@ -42,7 +42,7 @@ export const AdBanner: React.FC<AdBannerProps> = ({
     );
   }
 
-  // Placeholder banner before AdSense approval/credentials are provided
+  // Placeholder banner before AdSense slot ID is provided
   return (
     <div className={`w-full my-6 ${className}`}>
       <div className="w-full py-4 px-4 rounded-2xl bg-slate-900/40 border border-dashed border-slate-700/60 flex flex-col items-center justify-center text-center space-y-1 select-none backdrop-blur-sm">
@@ -53,7 +53,7 @@ export const AdBanner: React.FC<AdBannerProps> = ({
           {label}
         </p>
         <span className="text-[10px] text-slate-600">
-          (구글 애드센스 / 카카오 애드핏 승인 후 광고가 보여지는 위치입니다)
+          (구글 애드센스 승인 심사 진행 중인 위치입니다)
         </span>
       </div>
     </div>
