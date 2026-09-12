@@ -23,6 +23,7 @@ import {
   Info,
 } from 'lucide-react';
 import { PersonalityType, AXIS_DETAILS, AxisType } from '../data/testData';
+import { AdBanner } from './AdBanner';
 
 ChartJS.register(
   RadialLinearScale,
@@ -193,6 +194,9 @@ export const ResultReport: React.FC<ResultReportProps> = ({
         </div>
       </div>
 
+      {/* Ad Banner Position (Result Top) */}
+      <AdBanner label="결과 리포트 상단 광고 영역" />
+
       {/* Main Report Container for Image Export */}
       <div ref={reportRef} className="space-y-8 p-4 sm:p-6 rounded-3xl bg-slate-950/60 border border-slate-800">
         {/* Result Header Hero Card */}
@@ -326,6 +330,9 @@ export const ResultReport: React.FC<ResultReportProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Ad Banner Position (Result Bottom) */}
+        <AdBanner label="결과 리포트 하단 광고 영역" />
 
         {/* Academic Reference Footer */}
         <div className="p-4 rounded-2xl bg-slate-900/40 border border-slate-800 text-center text-xs text-slate-500 space-y-1">

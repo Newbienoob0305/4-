@@ -1,6 +1,6 @@
 import React from 'react';
 import { Play, ShieldCheck, Heart, Award, Zap, Compass, CheckCircle2 } from 'lucide-react';
-import { AXIS_DETAILS } from '../data/testData';
+import { AdBanner } from './AdBanner';
 
 interface IntroSectionProps {
   onStart: () => void;
@@ -81,6 +81,9 @@ export const IntroSection: React.FC<IntroSectionProps> = ({ onStart }) => {
           </p>
         </div>
       </div>
+
+      {/* Ad Banner Position (Intro Bottom) */}
+      <AdBanner label="메인 상단 광고 영역" />
 
       {/* Academic References Section */}
       <div className="space-y-4">

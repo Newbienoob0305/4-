@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Question } from '../data/testData';
 import { ChevronLeft, ChevronRight, Keyboard, Check } from 'lucide-react';
+import { AdBanner } from './AdBanner';
 
 interface QuestionCardProps {
   question: Question;
@@ -162,6 +163,9 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           <ChevronRight className="w-4 h-4" />
         </button>
       </div>
+
+      {/* Ad Banner Position (In-Test Bottom) */}
+      <AdBanner label="문항 진행 중 광고 영역" className="my-4" />
     </div>
   );
 };

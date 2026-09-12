@@ -1,6 +1,7 @@
 import React from 'react';
 import { Compass, ShieldCheck, Heart, Award, Zap, ArrowRight, Play, BookOpen, Layers } from 'lucide-react';
-import { AXIS_DETAILS, AxisType } from '../data/testData';
+import { AXIS_DETAILS } from '../data/testData';
+import { AdBanner } from './AdBanner';
 
 interface ModelGuideProps {
   onStartTest: () => void;
@@ -139,6 +140,9 @@ export const ModelGuide: React.FC<ModelGuideProps> = ({ onStartTest }) => {
           </div>
         </div>
       </div>
+
+      {/* Ad Banner Position (Model Guide Center) */}
+      <AdBanner label="모델 소개 페이지 광고 영역" />
 
       {/* Scoring & Cut-off Formula */}
       <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-4">

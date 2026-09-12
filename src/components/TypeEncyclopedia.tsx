@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PERSONALITY_TYPES, PersonalityType } from '../data/testData';
-import { Search, Sparkles, X, Award, ShieldAlert, Play, Layers } from 'lucide-react';
+import { Search, X, Award, ShieldAlert, Play, Layers } from 'lucide-react';
+import { AdBanner } from './AdBanner';
 
 interface TypeEncyclopediaProps {
   onStartTest: () => void;
@@ -39,6 +40,9 @@ export const TypeEncyclopedia: React.FC<TypeEncyclopediaProps> = ({ onStartTest 
           자존감(S/I), 자존심(D/A), 자기애(G/M), 자신감(E/H)의 조합으로 이뤄진 16가지 고유 유형의 특징과 성장 가이드를 탐색해 보세요.
         </p>
       </div>
+
+      {/* Ad Banner Position (Type Encyclopedia Top) */}
+      <AdBanner label="성격 유형 도감 상단 광고 영역" />
 
       {/* Filter & Search Bar */}
       <div className="glass-panel p-4 rounded-2xl border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
@@ -177,6 +181,9 @@ export const TypeEncyclopedia: React.FC<TypeEncyclopediaProps> = ({ onStartTest 
                 {selectedType.growthGuide}
               </p>
             </div>
+
+            {/* Ad Banner inside Modal */}
+            <AdBanner label="유형 상세 모달 하단 광고 영역" />
 
             {/* CTA */}
             <div className="pt-2 flex items-center justify-between gap-3">
